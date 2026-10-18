@@ -91,22 +91,38 @@ def upload_via_instagrapi(video_path: Path, caption: str, dry_run: bool = False)
 
     # ── Authenticate with session cache ──
     try:
+        logged_in = False
         if SESSION_FILE.exists():
             try:
                 logger.info(f"Loading cached Instagram session from {SESSION_FILE}...")
                 client.load_settings(str(SESSION_FILE))
-                client.login(username, password)
-                # Verify session viability
+                # Validate session viability without sending a new password login
                 client.get_timeline_feed()
-                logger.info("Instagram session restored successfully.")
+                logger.info("Instagram session restored successfully (zero login prompt).")
+                logged_in = True
             except Exception as e:
-                logger.warning(f"Cached session invalid ({e}). Attempting fresh login...")
-                client.login(username, password)
-                SESSION_FILE.parent.mkdir(parents=True, exist_ok=True)
-                client.dump_settings(str(SESSION_FILE))
-        else:
+                logger.warning(f"Cached session invalid or expired ({e}). Attempting fresh login...")
+                logged_in = False
+
+        if not logged_in:
             logger.info("Logging into Instagram (fresh session)...")
-            client.login(username, password)
+            # Auto-generate 2FA TOTP if seed is configured in .env
+            totp_code = None
+            totp_seed = os.getenv("INSTAGRAM_2FA_SEED") or os.getenv("INSTAGRAM_TOTP_KEY")
+            if totp_seed:
+                try:
+                    import pyotp
+                    totp = pyotp.TOTP(totp_seed.replace(" ", ""))
+                    totp_code = totp.now()
+                    logger.info("Generated 2FA TOTP verification code automatically.")
+                except Exception as e:
+                    logger.warning(f"Could not generate TOTP code: {e}")
+
+            if totp_code:
+                client.login(username, password, verification_code=totp_code)
+            else:
+                client.login(username, password)
+
             SESSION_FILE.parent.mkdir(parents=True, exist_ok=True)
             client.dump_settings(str(SESSION_FILE))
             logger.info("Instagram login successful. Session saved.")
