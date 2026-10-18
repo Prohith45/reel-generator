@@ -35,6 +35,7 @@ temp/
 tmp/
 logs/
 data/
+brag-output/
 *.db
 *.sqlite
 *.log
