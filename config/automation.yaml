@@ -1,0 +1,146 @@
+# ============================================================================
+# 🎬 REEL AUTOMATION - Configuration
+# ============================================================================
+# All automation settings for weekly content pipeline
+# Copy to config/automation.local.yaml and customize (gitignored)
+
+# ── SCHEDULING ──────────────────────────────────────────────────────────────
+schedule:
+  # Cron expressions for weekly runs (Hermes cron format)
+  tuesday_cron: "0 10 * * 2"      # Every Tuesday at 10:00 AM
+  saturday_cron: "0 10 * * 6"     # Every Saturday at 10:00 AM
+  
+  # Timezone for cron (IANA format)
+  timezone: "Asia/Kolkata"
+
+# ── GENERATION DEFAULTS ─────────────────────────────────────────────────────
+generation:
+  # Default values used when topic planner doesn't specify
+  content_type: "educational"        # educational, technology, funny, professional
+  duration_seconds: 60               # Target video length
+  audience: "common"                 # common, engineers, kids
+  animation_style: "none"            # ken_burns, fade_scale, slide_pop, cinematic, minimal_clean, none, random_mix
+  subtitle_style: "fade_up"          # fade_up, pop_in, slide_left, typewriter
+  
+  # TTS Configuration
+  tts_engine: "kokoro"               # kokoro, supertonic, indic
+  kokoro_voice: "am_adam"            # am_adam, am_michael, bm_george, am_fenrir, am_puck, af_heart, af_sarah, af_bella
+  kokoro_language: "en-us"           # en-us, en-gb, es, fr, it, ja, zh, pt-br, hi
+  kokoro_pipeline: "a"               # a=en-us, b=en-gb, e=es, f=fr, i=it, j=ja, z=zh, p=pt-br, h=hi
+  
+  # Overlay & Intro
+  overlay: "oggy horizontal.mp4"     # oggy green screen video1.mp4, oggy green screen video2.mp4, cat.mp4, oggy horizontal.mp4, None
+  use_intro: true                    # Prepend Oggy intro
+
+# ── TOPIC SELECTION ─────────────────────────────────────────────────────────
+topics:
+  # Niche/category for topic generation
+  niche: "technology"                # technology, science, engineering, programming, electronics, ai
+  
+  # Predefined topic pool (used when LLM topic generation fails)
+  fallback_pool:
+    - "How a CPU executes an instruction"
+    - "What is a MOSFET and how does it work"
+    - "Understanding RAM vs Cache memory"
+    - "How Bluetooth frequency hopping works"
+    - "What happens when you type a URL"
+    - "How a GPU renders graphics"
+    - "Understanding HTTP/3 and QUIC"
+    - "What is a Transformer in AI"
+    - "How SSDs store data without moving parts"
+    - "Understanding DNS resolution"
+    - "How PWM controls motor speed"
+    - "What is a Microcontroller vs Microprocessor"
+    - "Understanding Capacitor types and uses"
+    - "How WiFi channels avoid interference"
+    - "What is a Neural Network"
+    - "How Git stores data internally"
+    - "Understanding Reactivity in Vue/Svelte"
+    - "How a Transistor amplifies signals"
+    - "What is Edge Computing"
+    - "Understanding JWT authentication"
+  
+  # Duplicate prevention
+  similarity_threshold: 0.75        # Skip topics too similar to recent (0.0-1.0)
+  lookback_count: 20                # Check last N published topics
+  
+  # Topic enrichment
+  generate_hook: true               # Generate click-worthy hook
+  generate_hashtags: true           # Generate relevant hashtags
+
+# ── VALIDATION ──────────────────────────────────────────────────────────────
+validation:
+  enabled: true
+  checks:
+    file_exists: true
+    file_not_empty: true
+    valid_mp4: true                 # Check with ffprobe
+    correct_resolution: true        # 1080x1920 (9:16)
+    correct_duration: true          # Within 10% of target
+    has_audio: true
+    has_video_stream: true
+  max_retries: 2
+  retry_delay_seconds: 30
+
+# ── PUBLISHING - YOUTUBE ────────────────────────────────────────────────────
+youtube:
+  enabled: true
+  # OAuth2 credentials (set via environment variables or config.local.yaml)
+  # client_id: ""
+  # client_secret: ""
+  # refresh_token: ""
+  
+  # Upload settings
+  privacy_status: "public"          # public, unlisted, private
+  category_id: "28"                 # 28 = Science & Technology
+  default_tags: ["tech", "education", "shorts", "tutorial"]
+  made_for_kids: false
+  auto_levels: true
+  notify_subscribers: false
+  
+  # Scheduling (optional - publish immediately if not set)
+  # schedule_time: "2026-01-15T15:00:00Z"
+  
+  # Retry settings
+  max_retries: 3
+  retry_delay_seconds: 60
+
+# ── PUBLISHING - INSTAGRAM ──────────────────────────────────────────────────
+instagram:
+  enabled: true
+  # Meta Graph API credentials (set via environment variables or config.local.yaml)
+  # access_token: ""
+  # instagram_business_account_id: ""
+  
+  # Upload settings
+  share_to_feed: true
+  cover_image: ""                   # Optional custom cover (path or URL)
+  
+  # Retry settings
+  max_retries: 3
+  retry_delay_seconds: 60
+
+# ── PUBLISHING HISTORY ──────────────────────────────────────────────────────
+history:
+  database: "data/publishing_history.db"
+  max_records: 1000
+  cleanup_older_than_days: 365
+
+# ── DRY RUN / TEST MODE ─────────────────────────────────────────────────────
+dry_run:
+  enabled: false                    # Set true to test without publishing
+  simulate_upload_delay: 2          # Simulated seconds for "upload"
+  
+# ── LOGGING ─────────────────────────────────────────────────────────────────
+logging:
+  level: "INFO"
+  file: "logs/automation.log"
+  max_size_mb: 10
+  backup_count: 5
+
+# ── RECOVERY ────────────────────────────────────────────────────────────────
+recovery:
+  enabled: true
+  max_generation_retries: 2
+  max_publish_retries: 3
+  resume_from_last_step: true       # On restart, continue from last successful step

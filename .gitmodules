@@ -1,0 +1,4 @@
+[submodule "script/llama.cpp"]
+	path = script/llama.cpp
+	url = https://github.com/ggml-org/llama.cpp.git
+	ignore = dirty

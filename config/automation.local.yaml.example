@@ -1,0 +1,39 @@
+# ============================================================================
+# 🎬 REEL AUTOMATION - Local Configuration (SECRETS - DO NOT COMMIT)
+# ============================================================================
+# Copy this to config/automation.local.yaml and fill in your credentials
+# This file is gitignored
+
+# ── YOUTUBE OAUTH2 CREDENTIALS ──────────────────────────────────────────────
+# Get from: Google Cloud Console → APIs & Services → Credentials
+# Create OAuth 2.0 Client ID (Web application)
+# Add authorized redirect URI: http://localhost:8080/oauth2callback
+# Then run: python -m automation.publisher.youtube_auth to get refresh_token
+
+youtube:
+  client_id: "YOUR_GOOGLE_CLIENT_ID"
+  client_secret: "YOUR_GOOGLE_CLIENT_SECRET"
+  refresh_token: "YOUR_REFRESH_TOKEN"
+
+# ── INSTAGRAM / META GRAPH API CREDENTIALS ───────────────────────────────────
+# Get from: Meta Developer Portal → Your App → Settings → Basic
+# App type: Business
+# Products: Instagram Graph API
+# App Review: Need instagram_content_publish, instagram_manage_insights permissions
+# Access Token: Generate long-lived token (60 days) via Graph API Explorer
+# Instagram Business Account ID: Get from Meta Business Suite or Graph API
+
+instagram:
+  access_token: "YOUR_META_LONG_LIVED_ACCESS_TOKEN"
+  instagram_business_account_id: "YOUR_INSTAGRAM_BUSINESS_ACCOUNT_ID"
+  # For token refresh (optional - if you have app secret):
+  # app_id: "YOUR_META_APP_ID"
+  # app_secret: "YOUR_META_APP_SECRET"
+
+# ── EXISTING PROJECT CREDENTIALS ─────────────────────────────────────────────
+# These might already be in your .env file
+# OPENROUTER_API_KEY: "your_key"
+# PEXELS_API_KEY: "YOUR_PEXELS_API_KEY_HERE"
+
+# ── OTHER ────────────────────────────────────────────────────────────────────
+# Any other API keys needed

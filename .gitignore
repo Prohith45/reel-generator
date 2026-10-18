@@ -1,0 +1,68 @@
+# ============================================================================
+# Git Ignore - Reel Generator Security & Large File Blocking
+# ============================================================================
+
+# Secrets & Credentials
+.env
+.env.*
+!.env.example
+*client_secret*.json
+*credentials*.json
+token.json
+token.pickle
+session.json
+config/token.json
+config/session.json
+config/*.local.yaml
+
+# Local Models & Heavy Binaries (GitHub 100MB limit protection)
+*.gguf
+*.onnx
+*.bin
+*.pth
+*.pt
+src/voice/models/
+language_converter/.hf_cache/
+supertonic/assets/
+supertonic/**/assets/
+
+# Generated Media, Caches & Databases
+outputs/
+cache/
+.cache/
+scratch/
+temp/
+tmp/
+logs/
+data/
+*.db
+*.sqlite
+*.log
+*.mp4
+*.wav
+!assets/*.mp4
+!assets/**/*.mp4
+!assets/*.wav
+!assets/**/*.wav
+
+# Python & Environment
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# IDE & OS files
+.vscode/
+.idea/
+.aider*
+.DS_Store
+Thumbs.db
+
+# Build Dirs & Submodules
+src/script/llama.cpp/
+india_tts/outputs/

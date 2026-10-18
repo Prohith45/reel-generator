@@ -1,0 +1,326 @@
+# ============================================================================
+# 🎬 REEL GENERATOR - MASTER CONFIGURATION
+# ============================================================================
+# All visual, layout, animation, and pipeline settings in one place.
+# Modify these values to customize your reel output.
+
+# ── VIDEO RESOLUTION & FORMAT ──────────────────────────────────────────────
+video:
+  visual_mode: "hybrid"          # "images" = 100% static scraped images, "hybrid" = scraped images + up to 3 B-roll videos
+  width: 1080                    # Reel width (pixels) - Instagram/YouTube Shorts
+  height: 1920                   # Reel height (pixels) - 9:16 aspect ratio
+  fps: 30                        # Frames per second
+  codec: "libx264"               # Video codec (libx264 for H.264)
+  audio_codec: "aac"             # Audio codec
+  bitrate: "8000k"               # Video bitrate for quality
+  max_broll_inserts: 3           # Max B-Roll inserts
+  broll_trim_duration: [2.0, 4.0] # Duration for B-Roll clips
+  output_format: "mp4"           # Output file format
+
+# ── BACKGROUND ─────────────────────────────────────────────────────────────
+background:
+  image_path: "assets/templates/background.jpeg"  # Path to background image
+  blur_radius: 3                 # Slight blur for depth effect (0 = no blur)
+  brightness: 0.85               # Darken background (0.0-1.0, 1.0 = original)
+  overlay_color: [0, 0, 0]       # Dark overlay RGB
+  overlay_opacity: 0.25          # Overlay opacity (0.0-1.0)
+
+# ── SCRAPED IMAGES PLACEMENT ───────────────────────────────────────────────
+images:
+  # Position (relative to video dimensions, 0.0-1.0)
+  position_x: 0.5               # Horizontal center (0.0=left, 0.5=center, 1.0=right)
+  position_y: 0.28              # Slightly above center (0.0=top, 1.0=bottom)
+
+  # Size constraints
+  max_width_ratio: 0.80         # Max width as fraction of video width (0.0-1.0)
+  max_height_ratio: 0.36       # Max height as fraction of video height (0.0-1.0)
+  min_width_ratio: 0.50         # Minimum width ratio (too small = ugly)
+  
+  # Appearance
+  corner_radius: 0              # Match your background box by removing generated corners
+  border_width: 0               # Set to 0 so the script doesn't draw its own border!
+  border_color: [255, 255, 255] # Border color RGB (white)
+  shadow_offset: [0, 0]         # Drop shadow offset (disabled)
+  shadow_color: [0, 0, 0]       # Shadow color RGB
+  shadow_opacity: 0.0           # Shadow opacity
+  shadow_blur: 0                # Shadow blur radius
+  
+  # Image fit mode: "contain" (fit inside), "cover" (fill area, crop edges)
+  fit_mode: "contain"
+  
+  # Transition between images
+  transition_duration: 0.6      # Crossfade duration in seconds
+  display_duration_min: 2.5     # Minimum seconds per image
+  display_duration_max: 5.0     # Maximum seconds per image
+
+# ── SUBTITLES ──────────────────────────────────────────────────────────────
+subtitles:
+  # Position
+  position_y: 0.12              # Vertical position (top-anchored, above images)
+  max_width_ratio: 0.88         # Max subtitle width as fraction of video width
+  words_per_screen: 2           # Words to display per chunk for karaoke
+  
+  # Font
+  font_family: "Arial"          # Font family (use system fonts)
+  font_size: 56                 # Font size in pixels
+  font_bold: true               # Bold text
+  
+  # Colors
+  text_color: [255, 255, 255]   # Main text color RGB (white)
+  highlight_color: [0, 191, 255] # Currently-spoken word highlight (blue)
+  outline_color: [0, 0, 0]      # Text outline/stroke color
+  outline_width: 3               # Outline width in pixels
+  
+  # Background box
+  bg_enabled: true               # Show background box behind text
+  bg_color: [0, 0, 0]           # Background box color RGB
+  bg_opacity: 0.65              # Background box opacity
+  bg_padding: [15, 25, 15, 25]  # Padding [top, right, bottom, left]
+  bg_corner_radius: 12          # Rounded corners for bg box
+  
+  # Word-by-word karaoke highlighting
+  karaoke_enabled: true          # Highlight current word
+  words_per_line: 6              # Max words per subtitle line
+  lines_visible: 2               # Number of visible lines at once
+  
+  # Animation
+  entrance_animation: "fade_up"  # "fade_up", "pop_in", "slide_left", "typewriter"
+  exit_animation: "fade_out"     # "fade_out", "slide_down", "pop_out"
+
+# ── ANIMATIONS & EFFECTS ──────────────────────────────────────────────────
+animations:
+  # Global animation style (can be overridden per-video)
+  default_style: "ken_burns"
+  
+  # Available styles and their parameters
+  styles:
+    fade_scale:
+      description: "Smooth fade-in with subtle scale"
+      fade_duration: 0.5
+      scale_start: 1.05
+      scale_end: 1.0
+      
+    ken_burns:
+      description: "Slow zoom + pan (documentary style)"
+      zoom_start: 1.0
+      zoom_end: 1.15
+      pan_range: 0.05           # How far to pan (fraction of image)
+      
+    slide_pop:
+      description: "Images slide in from sides"
+      slide_direction: "alternate"  # "left", "right", "alternate", "random"
+      slide_duration: 0.4
+      overshoot: 1.1
+      
+    glitch_neon:
+      description: "Trendy glitch transitions"
+      glitch_intensity: 0.3
+      neon_glow_color: [0, 255, 200]
+      rgb_shift: 5
+      
+    bounce_rotate:
+      description: "Playful with slight rotation"
+      bounce_height: 20
+      rotation_degrees: 2
+      spring_damping: 0.8
+      
+    cinematic:
+      description: "Letterbox + dramatic zoom"
+      letterbox_ratio: 0.08
+      zoom_speed: 0.02
+      vignette_strength: 0.3
+      
+    minimal_clean:
+      description: "Simple crossfade (professional)"
+      crossfade_duration: 0.8
+      
+    random_mix:
+      description: "Random combination of all above"
+
+# ── B-ROLL PROVIDERS (WATERFALL ENGINE) ───────────────────────────────────
+broll:
+  enabled: true
+  strict_relevance: true
+  providers_order: ["mixkit", "tenor", "pexels"]
+  mixkit:
+    enabled: true
+  tenor:
+    enabled: true
+    api_key: ""  # Set TENOR_API_KEY in .env
+    append_context: "animation" # Appends to query to get technical loops instead of memes
+    blocked_tags: ["meme", "funny", "reaction", "cartoon", "anime", "laugh", "cute"]
+  pexels:
+    enabled: true
+    api_key: ""  # Set PEXELS_API_KEY in .env
+
+# Backward compatibility for legacy pexels reads
+pexels:
+  api_key: ""  # Set PEXELS_API_KEY in .env
+  prefer_video: true
+  enabled: true
+
+# ── SCRIPT GENERATION ──────────────────────────────────────────────────────
+script:
+  llm_mode: "api"                # "api" = Google Gemini cloud API (default), "local" = GGUF via llama-cpp-python
+  model_path: "src/script/model.gguf"
+  model_type: "llama"            # Model architecture (Llama 3.1)
+  gpu_layers: 50                # GPU layers for acceleration
+  threads: 8                    # CPU threads
+  temperature: 0.5
+  top_p: 0.9
+  repetition_penalty: 1.1
+  words_per_second: 2.5         # For duration calculation (150 WPM)
+
+  # Cloud API mode (used when llm_mode: "api") - Google Gemini API
+  # NOTE: You can set GEMINI_API_KEY in .env (recommended, gitignored) or paste directly below.
+  api:
+    base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
+    api_key: ""         # Set GEMINI_API_KEY in .env
+    model_name: "gemini-3.5-flash-lite"
+
+
+# ── VOICE SYNTHESIS ────────────────────────────────────────────────────────
+voice:
+  language: "en"                 # Default language: "en" or "te"
+  engine: "kokoro"               # Default engine
+  
+  english:
+    engine: "kokoro"
+    speed: 1.0
+    sample_rate: 24000
+    
+  telugu:
+    engine: "indic"
+    speed: 1.0
+    sample_rate: 24000
+
+  kokoro:
+    voice_id: "am_adam"            # Default voice
+    lang_code: "a"                 # Pipeline language code (a=US, b=UK, j=ja, z=zh, etc.)
+    speed: 1.0                     # Speech speed (1.05 for shorts, 1.00 for long-form)
+    sample_rate: 24000
+
+  indic:
+    language: "Telugu"
+    lang_code: "te"
+    speaker: "Prakash"
+    vibe: "1"
+    engine: "indic"
+
+# ── IMAGE SCRAPING ─────────────────────────────────────────────────────────
+scraping:
+  source: "bing"                 # "bing", "google", or "both"
+  headless: true                 # Run browser in headless mode
+  images_per_keyword: 1          # Exactly 1 image per sentence to prevent flashing
+  max_total_images: 15           # Max images per video
+  
+  # Retry logic
+  max_retries: 5                 # Max retries per image download
+  retry_delay: 2.0               # Initial retry delay (seconds)
+  retry_backoff: 1.5             # Exponential backoff multiplier
+  
+  # Fallback chain: if primary source fails, try alternatives
+  fallback_sources:
+    - "bing"
+    - "google"
+    - "duckduckgo"
+  
+  # Image validation
+  min_image_width: 400           # Minimum pixel width
+  min_image_height: 300          # Minimum pixel height
+  max_file_size_mb: 10           # Max file size
+  
+  # NLP keyword extraction
+  keyword_extraction:
+    method: "rake"               # "rake", "tfidf", "noun_phrases"
+    max_keywords_per_sentence: 3 # Extract up to 3 technical keywords per sentence
+    add_topic_context: true      # Prepend topic to search queries
+
+# ── LANGUAGE TRANSLATION ───────────────────────────────────────────────────
+translation:
+  enabled: false                 # Enable translation
+  model_name: "facebook/nllb-200-distilled-600M"
+  source_language: "eng_Latn"
+  target_language: "tel_Telu"    # Default target
+  quantization: "8bit"           # "8bit" or "none"
+  max_tokens: 256
+  num_beams: 4
+
+# ── OUTPUT ─────────────────────────────────────────────────────────────────
+output:
+  base_dir: "outputs"             # Base output directory
+  single_video_dir: "outputs/videos"
+  series_dir: "outputs/videos"
+  temp_dir: "outputs/audio"       # Temporary files (cleaned after)
+  
+  # Naming
+  filename_pattern: "{topic}_{timestamp}"  # Pattern for output filenames
+  series_pattern: "{topic}_EP{episode:02d}_{timestamp}"
+  
+  # Cleanup
+  keep_temp_files: false         # Keep intermediate files (audio, images)
+  keep_scraped_images: true      # Keep downloaded images
+
+# ── PERFORMANCE ────────────────────────────────────────────────────────────
+performance:
+  parallel_image_downloads: 4    # Concurrent image downloads
+  preload_images: true           # Preload images into memory
+  gpu_rendering: true            # Use GPU for video encoding if available
+  cache_models: true             # Keep models in memory between videos (series)
+
+# ── GREEN SCREEN OVERLAYS ──────────────────────────────────────────────────
+overlays:
+  default:
+    colorkey_hex: "0x2E9043"
+    chromakey_hex: "0x2E9043"
+    similarity: 0.20
+    blend: 0.02
+    despill: null
+    eq: null
+    scale_height: 580
+    scale_width: -1
+    position: "x=(W-w)/2:y=H-h"
+    crop: null
+
+  "oggy green screen video1.mp4":
+    scale_height: 950
+    colorkey_hex: "0x2E9043"
+    chromakey_hex: "0x2E9043"
+    similarity: 0.20
+    blend: 0.02
+    despill: null
+    eq: null
+    crop: "in_w-4:in_h-4:2:2"
+
+  "oggy green screen video2.mp4":
+    scale_height: 580
+    colorkey_hex: "0x00B11B"
+    chromakey_hex: "0x00B11B"
+    similarity: 0.20
+    blend: 0.02
+    despill: null
+    eq: null
+    crop: null
+
+  "cat.mp4":
+    scale_height: 700
+    colorkey_hex: "0x069015"
+    chromakey_hex: "0x069015"
+    similarity: 0.20
+    blend: 0.02
+    despill: null
+    eq: null
+    crop: null
+
+  "oggy horizontal.mp4":
+    scale_height: 600
+    colorkey_hex: "0x0DA416"
+    chromakey_hex: "0x0DA416"
+    similarity: 0.20
+    blend: 0.02
+    despill: null
+    eq: null
+    crop: null
+
+
+
